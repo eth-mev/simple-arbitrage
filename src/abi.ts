@@ -20,39 +20,105 @@ export const UNISWAP_QUERY_ABI = [{
   "type": "function"
 }]
 
-export const BUNDLE_EXECUTOR_ABI = [{
-  "inputs": [{
-    "internalType": "address payable",
-    "name": "_to",
-    "type": "address"
-  }, {"internalType": "uint256", "name": "_value", "type": "uint256"}, {
-    "internalType": "bytes",
-    "name": "_data",
-    "type": "bytes"
-  }],
-  "name": "call",
-  "outputs": [{"internalType": "bytes", "name": "", "type": "bytes"}],
-  "stateMutability": "payable",
-  "type": "function"
-}, {
-  "inputs": [{"internalType": "address", "name": "_executor", "type": "address"}],
-  "stateMutability": "payable",
-  "type": "constructor"
-}, {
-  "inputs": [{
-    "internalType": "uint256",
-    "name": "_wethAmountToFirstMarket",
-    "type": "uint256"
-  }, {"internalType": "uint256", "name": "_ethAmountToCoinbase", "type": "uint256"}, {
-    "internalType": "address[]",
-    "name": "_targets",
-    "type": "address[]"
-  }, {"internalType": "bytes[]", "name": "_payloads", "type": "bytes[]"}],
-  "name": "uniswapWeth",
-  "outputs": [],
-  "stateMutability": "payable",
-  "type": "function"
-}, {"stateMutability": "payable", "type": "receive"}]
+export const BUNDLE_EXECUTOR_ABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_executor",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "name": "call",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "call1",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "close",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_wethAmountToFirstMarket",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_targets",
+        "type": "address[]"
+      },
+      {
+        "internalType": "bytes[]",
+        "name": "_payloads",
+        "type": "bytes[]"
+      }
+    ],
+    "name": "uniswapWeth",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
+  }
+]
 
 
 export const UNISWAP_PAIR_ABI = [{

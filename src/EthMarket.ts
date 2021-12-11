@@ -30,6 +30,8 @@ export abstract class EthMarket {
 
   protected readonly _tokens: Array<string>;
   protected readonly _marketAddress: string;
+
+  // V2, V3...etc
   protected readonly _protocol: string;
 
   constructor(marketAddress: string, tokens: Array<string>, protocol: string) {

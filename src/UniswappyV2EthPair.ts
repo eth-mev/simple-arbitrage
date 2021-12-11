@@ -7,8 +7,9 @@ import { ETHER } from "./utils";
 import { MarketsByToken } from "./Arbitrage";
 
 // batch count limit helpful for testing, loading entire set of uniswap markets takes a long time to load
-const BATCH_COUNT_LIMIT = 100;
-const UNISWAP_BATCH_SIZE = 1000
+// const BATCH_COUNT_LIMIT = 100;
+const BATCH_COUNT_LIMIT = 10000;
+const UNISWAP_BATCH_SIZE = 200  // maybe fail if get too large batch size
 
 // Not necessary, slightly speeds up loading initialization when we know tokens are bad
 // Estimate gas will ensure we aren't submitting bad bundles, but bad tokens waste time
@@ -50,19 +51,27 @@ export class UniswappyV2EthPair extends EthMarket {
 
     const marketPairs = new Array<UniswappyV2EthPair>()
     for (let i = 0; i < BATCH_COUNT_LIMIT * UNISWAP_BATCH_SIZE; i += UNISWAP_BATCH_SIZE) {
+
+      // [ [ token0 address: string , token1 address: string, LP address: string ] ]
       const pairs: Array<Array<string>> = (await uniswapQuery.functions.getPairsByIndexRange(factoryAddress, i, i + UNISWAP_BATCH_SIZE))[0];
+
+
+
       for (let i = 0; i < pairs.length; i++) {
         const pair = pairs[i];
         const marketAddress = pair[2];
         let tokenAddress: string;
+
 
         if (pair[0] === WETH_ADDRESS) {
           tokenAddress = pair[1]
         } else if (pair[1] === WETH_ADDRESS) {
           tokenAddress = pair[0]
         } else {
+          // FIXME: why only search WETH pair?
           continue;
         }
+
         if (!blacklistTokens.includes(tokenAddress)) {
           const uniswappyV2EthPair = new UniswappyV2EthPair(marketAddress, [pair[0], pair[1]], "");
           marketPairs.push(uniswappyV2EthPair);
@@ -72,7 +81,6 @@ export class UniswappyV2EthPair extends EthMarket {
         break
       }
     }
-
     return marketPairs
   }
 
@@ -81,11 +89,21 @@ export class UniswappyV2EthPair extends EthMarket {
       _.map(factoryAddresses, factoryAddress => UniswappyV2EthPair.getUniswappyMarkets(provider, factoryAddress))
     )
 
+    /*
+    {
+       RPL: [Pair],
+       CRV: [Pair],
+       ...etc
+    }
+     */
     const marketsByTokenAll = _.chain(allPairs)
       .flatten()
       .groupBy(pair => pair.tokens[0] === WETH_ADDRESS ? pair.tokens[1] : pair.tokens[0])
       .value()
 
+    /*
+    [Pair]
+    * */
     const allMarketPairs = _.chain(
       _.pickBy(marketsByTokenAll, a => a.length > 1) // weird TS bug, chain'd pickBy is Partial<>
     )
@@ -93,8 +111,16 @@ export class UniswappyV2EthPair extends EthMarket {
       .flatten()
       .value()
 
+
     await UniswappyV2EthPair.updateReserves(provider, allMarketPairs);
 
+    /*
+    {
+       RPL: [Pair],
+       CRV: [Pair],
+       ...etc
+    }
+ */
     const marketsByToken = _.chain(allMarketPairs)
       .filter(pair => (pair.getBalance(WETH_ADDRESS).gt(ETHER)))
       .groupBy(pair => pair.tokens[0] === WETH_ADDRESS ? pair.tokens[1] : pair.tokens[0])
@@ -110,7 +136,11 @@ export class UniswappyV2EthPair extends EthMarket {
     const uniswapQuery = new Contract(UNISWAP_LOOKUP_CONTRACT_ADDRESS, UNISWAP_QUERY_ABI, provider);
     const pairAddresses = allMarketPairs.map(marketPair => marketPair.marketAddress);
     console.log("Updating markets, count:", pairAddresses.length)
+
+    // [ [ reserve0, reserve1, lastTimeStamp ]  ]
     const reserves: Array<Array<BigNumber>> = (await uniswapQuery.functions.getReservesByPairs(pairAddresses))[0];
+
+
     for (let i = 0; i < allMarketPairs.length; i++) {
       const marketPair = allMarketPairs[i];
       const reserve = reserves[i]
@@ -148,12 +178,14 @@ export class UniswappyV2EthPair extends EthMarket {
   }
 
   getAmountIn(reserveIn: BigNumber, reserveOut: BigNumber, amountOut: BigNumber): BigNumber {
+    // FIXME: why 1000 and 997?
     const numerator: BigNumber = reserveIn.mul(amountOut).mul(1000);
     const denominator: BigNumber = reserveOut.sub(amountOut).mul(997);
     return numerator.div(denominator).add(1);
   }
 
   getAmountOut(reserveIn: BigNumber, reserveOut: BigNumber, amountIn: BigNumber): BigNumber {
+    // FIXME: why 1000 and 997?
     const amountInWithFee: BigNumber = amountIn.mul(997);
     const numerator = amountInWithFee.mul(reserveOut);
     const denominator = reserveIn.mul(1000).add(amountInWithFee);

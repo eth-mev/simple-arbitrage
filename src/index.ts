@@ -21,7 +21,7 @@ const MINER_REWARD_PERCENTAGE = parseInt(process.env.MINER_REWARD_PERCENTAGE || 
 
 // Mainnet
 // ETHEREUM_RPC_URL = "https://mainnet.infura.io/v3/921303e119d14c15bc81eba01a2ff8f7"
-BUNDLE_EXECUTOR_ADDRESS = "0x109f2Aa85C5EAcde3ccA1477089bA723e754c032";
+BUNDLE_EXECUTOR_ADDRESS = "0x56dfaF6d227D60210f915D2dB78491135A710c9a";
 connectionInfoOrUrl = "https://relay.flashbots.net"
 CHAIN_ID = 1;
 

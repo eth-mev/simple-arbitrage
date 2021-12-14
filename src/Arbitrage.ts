@@ -190,35 +190,62 @@ export class Arbitrage {
         signer: this.executorWallet
       }
 
-      console.log("signingBundle")
-      const signedBundle = await this.flashbotsProvider.signBundle([
-        transactionArb
-      ]);
-      console.log(`signedBundle: ${signedBundle}`);
+      try {
+        const estimateGas = await this.bundleExecutorContract.provider.estimateGas(
+          {
+            ...transactionArb.transaction,
+            from: this.executorWallet.address,
+            chainId: chainId,
+            type: 2,
+            maxFeePerGas: priorityFee.add(maxBaseFeeInFutureBlock),
+            maxPriorityFeePerGas: priorityFee,
+          })
 
+        transaction.gasLimit = estimateGas.mul(10)
+        log("", logStatus.estimateSuccess);
+        console.log(`Estimate gas success!!!!!!`)
 
-      const bundleSubmitResponse = await this.flashbotsProvider.sendRawBundle(signedBundle, blockNumber + 1);
-      console.log(`bundleSubmitResponse: ${bundleSubmitResponse}`);
+      } catch (e) {
+        log(`${e}`, logStatus.estimateFail);
+        console.warn(`Estimate gas failure for `, e)
 
-
-      if ('error' in bundleSubmitResponse) {
-        console.log(`bundleSubmitResponse Error: ${bundleSubmitResponse.error.message}`);
         continue;
       }
 
 
-      const bundleResolution = await bundleSubmitResponse.wait()
-      if (bundleResolution === FlashbotsBundleResolution.BundleIncluded) {
-        console.log(`Congrats, included in ${blockNumber + 1}`)
-      } else if (bundleResolution === FlashbotsBundleResolution.BlockPassedWithoutInclusion) {
-        console.log(`Not included in ${blockNumber + 1}`)
-      } else if (bundleResolution === FlashbotsBundleResolution.AccountNonceTooHigh) {
-        console.log("Nonce too high, bailing")
-      }
+      console.log("debug exit");
+      // console.log("signingBundle")
+      // const signedBundle = await this.flashbotsProvider.signBundle([
+      //   transactionArb
+      // ]);
+      // console.log(`signedBundle: ${signedBundle}`);
+      //
+      //
+      // const bundleSubmitResponse = await this.flashbotsProvider.sendRawBundle(signedBundle, blockNumber + 1);
+      // console.log(`bundleSubmitResponse: ${bundleSubmitResponse}`);
+      //
+      //
+      // if ('error' in bundleSubmitResponse) {
+      //   console.log(`bundleSubmitResponse Error: ${bundleSubmitResponse.error.message}`);
+      //   continue;
+      // }
+      //
+      //
+      // const bundleResolution = await bundleSubmitResponse.wait()
+      // if (bundleResolution === FlashbotsBundleResolution.BundleIncluded) {
+      //   console.log(`Congrats, included in ${blockNumber + 1}`)
+      // } else if (bundleResolution === FlashbotsBundleResolution.BlockPassedWithoutInclusion) {
+      //   console.log(`Not included in ${blockNumber + 1}`)
+      // } else if (bundleResolution === FlashbotsBundleResolution.AccountNonceTooHigh) {
+      //   console.log("Nonce too high, bailing")
+      // }
 
 
-      // Testing
-      break;
+
+
+
+
+
 
 
       /*

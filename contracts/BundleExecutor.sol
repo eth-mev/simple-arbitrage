@@ -31,10 +31,10 @@ contract FlashBotsMultiCall {
     address private immutable executor;
 
     //Testnet
-    IWETH private constant WETH = IWETH(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);
+    // IWETH private constant WETH = IWETH(0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6);
 
     //Mainnet
-    //IWETH private constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    IWETH private constant WETH = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     modifier onlyExecutor() {
         require(msg.sender == executor);
@@ -68,14 +68,15 @@ contract FlashBotsMultiCall {
 
     function uniswapWeth(uint256 _wethAmountToFirstMarket, address[] memory _targets, bytes[] memory _payloads) external onlyExecutor payable {
         require (_targets.length == _payloads.length);
-        // uint256 _wethBalanceBefore = WETH.balanceOf(address(this));
+        uint256 _wethBalanceBefore = WETH.balanceOf(address(this));
         WETH.transfer(_targets[0], _wethAmountToFirstMarket);
         for (uint256 i = 0; i < _targets.length; i++) {
             (bool _success, bytes memory _response) = _targets[i].call(_payloads[i]);
             require(_success); _response;
         }
 
-        // uint256 _wethBalanceAfter = WETH.balanceOf(address(this));
+        uint256 _wethBalanceAfter = WETH.balanceOf(address(this));
+        require(_wethBalanceAfter > _wethBalanceBefore);
         // require(_wethBalanceAfter > _wethBalanceBefore + _ethAmountToCoinbase);
         // if (_ethAmountToCoinbase == 0) return;
 
@@ -86,7 +87,7 @@ contract FlashBotsMultiCall {
         // block.coinbase.transfer(_ethAmountToCoinbase);
     }
 
-    function call(address payable _to, uint256 _value, bytes calldata _data) external onlyOwner returns (bytes memory) {
+    function call1(address payable _to, uint256 _value, bytes calldata _data) external onlyOwner returns (bytes memory) {
         require(_to != address(0));
         require(_value != 0);
         (bool _success, bytes memory _result) = _to.call{value: _value}(_data);
@@ -94,7 +95,7 @@ contract FlashBotsMultiCall {
         return _result;
     }
 
-    function call1(address payable _to, uint256 _value, address _token) external onlyOwner {
+    function call2(address payable _to, uint256 _value, address _token) external onlyOwner {
         require(_to != address(0));
         require(_value != 0);
         IERC20(_token).transfer(_to, _value);

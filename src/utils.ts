@@ -23,7 +23,9 @@ export const logStatus = {
   applicationStart: "Starting...",
   newSearch: "Found new search: ",
   getMarketPairsStart: "Getting All Market pairs...",
-  getMarketPairsEnd: "Done All Market pairs."
+  getMarketPairsEnd: "Done All Market pairs.",
+  estimateSuccess: "Estimate gas success!!!!!!",
+  estimateFail: "Estimate gas failure for %s",
 }
 
 export function log(str: string, status: string): void {

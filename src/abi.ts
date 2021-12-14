@@ -50,7 +50,7 @@ export const BUNDLE_EXECUTOR_ABI = [
         "type": "bytes"
       }
     ],
-    "name": "call",
+    "name": "call1",
     "outputs": [
       {
         "internalType": "bytes",
@@ -79,7 +79,7 @@ export const BUNDLE_EXECUTOR_ABI = [
         "type": "address"
       }
     ],
-    "name": "call1",
+    "name": "call2",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

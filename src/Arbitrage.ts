@@ -3,7 +3,7 @@ import { BigNumber, Contract, Wallet } from "ethers";
 import { FlashbotsBundleProvider, FlashbotsBundleResolution } from "@flashbots/ethers-provider-bundle";
 import { WETH_ADDRESS } from "./addresses";
 import { EthMarket } from "./EthMarket";
-import { ETHER, bigNumberToDecimal } from "./utils";
+import { ETHER, bigNumberToDecimal, log, logStatus } from "./utils";
 import { Block } from "@ethersproject/abstract-provider";
 
 export interface CrossedMarketDetails {
@@ -81,14 +81,15 @@ export class Arbitrage {
   static printCrossedMarket(crossedMarket: CrossedMarketDetails): void {
     const buyTokens = crossedMarket.buyFromMarket.tokens
     const sellTokens = crossedMarket.sellToMarket.tokens
-    console.log(
+    const logStr = `Profit: ${crossedMarket.profit} Volume: ${crossedMarket.volume}\n` +
       `Profit: ${bigNumberToDecimal(crossedMarket.profit)} Volume: ${bigNumberToDecimal(crossedMarket.volume)}\n` +
       `${crossedMarket.buyFromMarket.protocol} (${crossedMarket.buyFromMarket.marketAddress})\n` +
       `  ${buyTokens[0]} => ${buyTokens[1]}\n` +
       `${crossedMarket.sellToMarket.protocol} (${crossedMarket.sellToMarket.marketAddress})\n` +
       `  ${sellTokens[0]} => ${sellTokens[1]}\n` +
-      `\n`
-    )
+      `\n`;
+    console.log(logStr)
+    log(logStr, logStatus.newSearch);
   }
 
 

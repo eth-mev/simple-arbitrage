@@ -91,7 +91,10 @@ async function main() {
     }
     console.log(`New Block: ${blockNumber} Search Done`)
     bestCrossedMarkets.forEach(Arbitrage.printCrossedMarket);
-    arbitrage.takeCrossedMarkets(bestCrossedMarkets, blockNumber, MINER_REWARD_PERCENTAGE, block, CHAIN_ID).then(healthcheck).catch(console.error)
+
+    const gasPrice = await provider.getGasPrice()
+
+    arbitrage.takeCrossedMarkets(bestCrossedMarkets, blockNumber, MINER_REWARD_PERCENTAGE, block, CHAIN_ID, gasPrice).then(healthcheck).catch(console.error)
   })
 }
 

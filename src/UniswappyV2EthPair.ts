@@ -20,7 +20,8 @@ const UNISWAP_BATCH_SIZE = 1000
 // Not necessary, slightly speeds up loading initialization when we know tokens are bad
 // Estimate gas will ensure we aren't submitting bad bundles, but bad tokens waste time
 const blacklistTokens = [
-  '0xD75EA151a61d06868E31F8988D28DFE5E9df57B4'
+  '0x9EA3b5b4EC044b70375236A281986106457b20EF',
+  '0xE7eaec9Bca79d537539C00C58Ae93117fB7280b9',
 ]
 
 interface GroupedMarkets {

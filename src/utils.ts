@@ -26,6 +26,13 @@ export const logStatus = {
   getMarketPairsEnd: "Done All Market pairs.",
   estimateSuccess: "Estimate gas success!!!!!!",
   estimateFail: "Estimate gas failure for %s",
+  signingBundle: "signingBundle",
+  signedBundle: "signedBundle: %s",
+  bundleSubmitResponse: "bundleSubmitResponse: %s",
+  bundleSubmitResponseError: "bundleSubmitResponse Error: %s",
+  included: "Congrats, included in %s",
+  notIncluded: "Skipped Block Tx in %s",
+  NonceTooHigh: "Nonce too high, bailing",
 }
 
 export function log(str: string, status: string): void {
